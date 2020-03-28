@@ -30,16 +30,30 @@ def machine_model(train_data,test_data):
     dataset.drop_duplicates(inplace = True)
     dataset.shape  
 
+    dataset1 = pd.read_csv(test_data)
+    dataset1 .columns 
+    dataset1.shape  
+
+    dataset1.drop_duplicates(inplace = True)
+    dataset1.shape 
+    
     dataset['text']=dataset['text'].map(lambda text: text[1:])
     dataset['text'] = dataset['text'].map(lambda text:re.sub('[^a-zA-Z0-9]+', ' ',text)).apply(lambda x: (x.lower()).split())
     ps = PorterStemmer()
     corpus=dataset['text'].apply(lambda text_list:' '.join(list(map(lambda word:ps.stem(word),(list(filter(lambda text:text not in set(stopwords.words('english')),text_list)))))))
 
-    cv = CountVectorizer()
-    X = cv.fit_transform(corpus.values).toarray()
-    y = dataset.iloc[:, 1].values
+    dataset1['text']=dataset1['text'].map(lambda text: text[1:])
+    dataset1['text'] = dataset1['text'].map(lambda text:re.sub('[^a-zA-Z0-9]+', ' ',text)).apply(lambda x: (x.lower()).split())
+    ps = PorterStemmer()
+    corpus1=dataset1['text'].apply(lambda text_list:' '.join(list(map(lambda word:ps.stem(word),(list(filter(lambda text:text not in set(stopwords.words('english')),text_list)))))))
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 0)
+    
+    cv = CountVectorizer()
+    X_train = cv.fit_transform(corpus.values).toarray()
+    y_train = dataset.iloc[:, 1].values
+
+    X_test = cv.fit_transform(corpus1.values).toarray()
+    y_test = dataset1.iloc[:, 1].values
 
     classifier = MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)
     classifier.fit(X_train , y_train)
