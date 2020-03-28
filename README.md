@@ -20,7 +20,4 @@
    7. Upload the file emails.csv as the training data.
    8. Upload the file emails_test.csv as the test data on the next web page.
    
-                                            THATS ALL!
-                                            PLAY AROUND WITH THE CODE
-                                            ADD ANY ML MODELS BY EDITING VIEWS.PY
-                                            ENJOY!
+
