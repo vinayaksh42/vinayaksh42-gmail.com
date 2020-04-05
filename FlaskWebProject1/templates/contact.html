@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -31,11 +31,10 @@
         <div class="container">
             <h2 class="display-4">Input Test Data</h2>
             <p class="lead">This is a machine learning model for filtering spam emails.</p>
-            <p>File uploaded successfully,This data will be used for training the machine learning model.</p>
+            <p>File uploaded successfully,This data will be split for training dataset and test data.</p>
             <p>File Name: {{name}}</p>
-            <form action="/contact1" method="post" enctype="multipart/form-data">
-                <input type="file" name="file1" />
-                <input type="submit" value="Upload">
+            <p>The machine learning model using MultinomialNB has the accuracy of {{results}}</p>
+            <p>Accuracy score {{numbers}} of {{accuracy}}</p>
         </div>
     </div>
 
