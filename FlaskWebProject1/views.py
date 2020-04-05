@@ -20,9 +20,10 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
 
 
-def machine_model(train_data,test_data):
+def machine_model(train_data):
     dataset = pd.read_csv(train_data)
     dataset .columns 
     dataset.shape  
@@ -30,30 +31,16 @@ def machine_model(train_data,test_data):
     dataset.drop_duplicates(inplace = True)
     dataset.shape  
 
-    dataset1 = pd.read_csv(test_data)
-    dataset1 .columns 
-    dataset1.shape  
-
-    dataset1.drop_duplicates(inplace = True)
-    dataset1.shape 
-    
     dataset['text']=dataset['text'].map(lambda text: text[1:])
     dataset['text'] = dataset['text'].map(lambda text:re.sub('[^a-zA-Z0-9]+', ' ',text)).apply(lambda x: (x.lower()).split())
     ps = PorterStemmer()
     corpus=dataset['text'].apply(lambda text_list:' '.join(list(map(lambda word:ps.stem(word),(list(filter(lambda text:text not in set(stopwords.words('english')),text_list)))))))
 
-    dataset1['text']=dataset1['text'].map(lambda text: text[1:])
-    dataset1['text'] = dataset1['text'].map(lambda text:re.sub('[^a-zA-Z0-9]+', ' ',text)).apply(lambda x: (x.lower()).split())
-    ps = PorterStemmer()
-    corpus1=dataset1['text'].apply(lambda text_list:' '.join(list(map(lambda word:ps.stem(word),(list(filter(lambda text:text not in set(stopwords.words('english')),text_list)))))))
-
-    
     cv = CountVectorizer()
-    X_train = cv.fit_transform(corpus.values).toarray()
-    y_train = dataset.iloc[:, 1].values
+    X = cv.fit_transform(corpus.values).toarray()
+    y = dataset.iloc[:, 1].values
 
-    X_test = cv.fit_transform(corpus1.values).toarray()
-    y_test = dataset1.iloc[:, 1].values
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 0)
 
     classifier = MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)
     classifier.fit(X_train , y_train)
@@ -64,7 +51,9 @@ def machine_model(train_data,test_data):
 
     total=cm[0][0]+cm[0][0]
     wrong=cm[0][1]+cm[1][0]
-    return (((total-wrong)/total)*100)
+    ac_score=accuracy_score(y_test, y_pred,normalize=False) 
+    number=len(y_test)
+    return (((total-wrong)/total)*100),ac_score,number
 
 @app.route('/')
 @app.route('/home')
@@ -83,20 +72,8 @@ def contact():
         f = request.files['file']  
         f.save(f.filename)  
         training_data=f.filename
+        result,ac,number=machine_model(training_data)
         return render_template('contact.html',
         title='Contact',
         year=datetime.now().year,
-        message='Your contact page.', name = f.filename)  
-
-@app.route('/contact1', methods = ['POST'])  
-def contact1():  
-    if request.method == 'POST':  
-        x = request.files['file1']  
-        x.save(x.filename)
-        test_data=x.filename
-        train_data=f.filename
-        result=machine_model(train_data,test_data)
-        return render_template('contact1.html',
-        title='Contact1',
-        year=datetime.now().year,
-        message='Your contact page.', name = x.filename,results=result)  
+        message='Your contact page.', name = f.filename,results=result,accuracy=ac,numbers=number)
