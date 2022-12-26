@@ -18,5 +18,5 @@ scipy==1.4.1
 setuptools==46.0.0.post20200309
 six==1.14.0
 Werkzeug==1.0.0
-wheel==0.34.2
+wheel==0.38.1
 wincertstore==0.2
